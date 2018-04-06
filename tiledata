@@ -1,0 +1,23 @@
+# Format is: tile number, then for each planet a pair of (number,letter)
+# The number marks position of planet, letter marks type of planet
+# Tile numbers 11,12,13 are the back sides of 5,6,7 used in 1-2p games
+# Number is counted from left to right, top to bottom when the arrow on
+# the tile points upwards. So 1 is the topmost space, 2 and 3 are the 
+# spaces in the next row, and so on. There are 19 spaces per tile, and 9 rows.
+# Letter can be B(rown), Y(ellow), O(range), R(ed), E(arthlike), W(hite), 
+# M(etal), G(aia), T(ransdim)
+# Most tiles have 6 planets. Tile 2 has 7, and tiles 11,12,13 have 5.
+
+1 7b 8e 9y 11t 18o 19r
+2 1m 2o 8w 11y 12b 17r 18t
+3 1t 7g 11m 13w 17e 19y
+4 1m 5r 9w 12o 13b 16e
+5 1w 6t 7g 11r 17o 19y
+6 3t 7b 8e 15g 16y 18t
+7 3b 4t 5r 12g 13g 19m
+8 1e 5w 6t 12o 13m 17t
+9 2o 3t 6w 12m 13g 14b
+10 3t 6t 7y 13g 14e 17r
+11 1w 6t 7g 11r 17o
+12 3t 8e 15g 16y 18t
+13 4t 5g 12g 13b 19m
