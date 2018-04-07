@@ -56,6 +56,7 @@ typedef struct adv_techtile{
 }
 
 /* Define the player's position on different VP tracks, techtrees, techtiles and federation tiles they possess, remaining buildings, and built planets
+There are maximum 4 players.
  */
 typedef struct player {
   int vp;
@@ -72,17 +73,79 @@ typedef struct player {
   planet *planets;
   int ore;
   int credit;
-  int pw1[4];
+  int pw[4];
   int gaiaformer;
   int QIC;
   int knowledge;
-} *player;
+} player[4];
+
+/*Charging power: 
+if there is enough power in pw1, then pw is transfered from pw1 to pw2
+ */
+void charge_pw(int playerid, int pw){
+  int pw1 = player[playerid].pw[1];
+  int pw2 = player[playerid].pw[2];
+  int pw3 = player[playerid].pw[3];
+  int vp = player[playerid].vp;
+  int vploss = pw - 1;
+  if (pw1 > 0)
+    if (pw1 >= pw)
+      {pw2 = pw2 + pw;
+      pw1 = pw1 - pw;
+      vp = vp - vploss;
+      }
+    else if (pw2 + pw1 >= pw)
+      {pw2 = pw2 + 2 * pw1 - pw;
+	pw1 = 0;
+	pw3 = pw3 + pw;
+	vp = vp - vploss;
+      }
+    else
+      {pw3 = pw3 + pw1 + pw2;
+	vp = vp + 1 - pw1 - pw2;
+	pw1 = 0;
+	pw2 = 0;
+      }
+  else if (pw2 > 0)
+    if (pw2 >= pw)
+      {pw3 = pw3 + pw;
+	pw2 = pw2 - pw;
+	vp = vp - vploss;
+      }
+    else
+      {pw3 = pw3 + pw2;
+	vp = vp + 1 - pw2
+	pw2 = 0;
+      }
+  else
+    printf("No more power can be charged");
+}
+
+/*To burn power, the player has to have enough in bowl 2
+ */
+void burn_pw (int playerid, int pw){
+  int pw2 = player[playerid].pw[2];
+  int pw3 = player[playerid].pw[3];
+  if (pw2 >= pw * 2)
+    {pw3 = pw3 + pw;
+      pw2 = pw2 - pw * 2;
+    }
+  else
+    printf ("There isn't enough power to burn");
+}
+
+/*Converting pw as free action, provided there is enough in bowl 3
+ */
+void convert_pw(int playerid, int pw, ){
+  if (player[playerid].pw[3] >= pw)
+    
+}
 
 /*0:terraforming, 1:navigation, 2:ai, 3:gaiaforming, 4:economy, 5:research
  */
-void gain_research(int tech){
-  if ( player->techtree[tech] != 6)
-    ++player->techtree[tech];
+void tech_up(int playerid, int tech){
+  if (player[playerid].techtree[tech] != 6)
+    ++player[playerid].techtree[tech];
   else
     printf("Already maxed out on this techtree");
 }
