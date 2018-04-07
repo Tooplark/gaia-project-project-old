@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include 'mapmanagement.h'
 
 /*To keep track, list of possible player actions:
@@ -28,6 +29,7 @@ Free actions:
 -- 1ore to 1c
 -- 1ore to +1pw
 - Burn power
+- (Charge pw)
  */
 
 
@@ -134,11 +136,60 @@ void burn_pw (int playerid, int pw){
     printf ("There isn't enough power to burn");
 }
 
-/*Converting pw as free action, provided there is enough in bowl 3
+/*Converting resources
+Possible *orgn_res: pw[3], ore, QIC, k
+Possible *tgt_res: ore, c, QIC, k, +pw
+tgt_res_num is the number of target resources that we want
  */
-void convert_pw(int playerid, int pw, ){
-  if (player[playerid].pw[3] >= pw)
-    
+void convert_resource(int playerid, char *orgn_res, char *tgt_res, int tgt_res_num){
+  int pw3 = player[playerid].pw[3];
+  int pw1 = player[playerid].pw[1];
+  int ore = player[playerid].ore;
+  int c = player[playerid].c;
+  int QIC = player[playerid].QIC;
+  int k = player[playerid].k;
+  if (strcmp(*orgn_res, "pw") == 0)
+    if (pw3 >= tgt_res_num && strcmp(*tgt_res, "c") == 0)
+	{pw3 = pw3 - tgt_res_num;
+	  pw1 = pw1 + tgt_res_num;
+	  c = c + tgt_res_num;
+	}
+    else if (pw3 >= 3 * tgt_res_num && strcmp(*tgt_res, "ore") == 0)
+      {pw3 = pw3 - 3 * tgt_res_num;
+	pw1 = pw1 + tgt_res_num;
+	ore = ore + tgt_res_num;
+      }
+    else if (pw3 >= 4 * tgt_res_num)
+      {pw3 = pw3 - 4 * tgt_res_num;
+	pw1 = pw1 + 4 * tgt_res_num;
+      if (strcmp(*tgt_res, "QIC") == 0)
+	  QIC = QIC + tgt_res_num;
+      else if (strcmp(*tgt_res,"k") == 0)
+	k = k + tgt_res_num;
+      }
+    else
+      printf ("There is not enough power to do conversion");
+  else if (strcmp(*orgn_res, "ore") == 0 && ore >= tgt_res_num)
+    if (strcmp(*tgt_res,"c") == 0)
+      {ore = ore - tgt_res_num;
+	c = c + tgt_res_num;
+      }
+    else if (strcmp(*tgt_res,"+pw") == 0)
+      {ore = ore - tgt_res_num;
+	pw1 = pw1 + tgt_res_num;
+      }
+    else
+      printf ("Illegal conversion from ore to target resource or not enough ore");
+  else if (strcmp(*orgn_res, "QIC") == 0 && QIC >= tgt_res_num && strcmp(*tgt_res,"ore") == 0)
+    {QIC = QIC - tgt_res_num;
+      ore = ore + tgt_res_num;
+    }
+  else if (strcmp(*orgn_res,"k") == 0 && k >= tgt_res_num && strcmp(*tgt_res,"c")==0)
+    {k = k - tgt_res_num;
+      c = c + tgt_res_num;
+    }
+  else
+    printf ("Illegal conversion or not enough origin resource");
 }
 
 /*0:terraforming, 1:navigation, 2:ai, 3:gaiaforming, 4:economy, 5:research
