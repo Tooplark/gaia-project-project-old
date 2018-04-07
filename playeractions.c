@@ -82,7 +82,7 @@ typedef struct player {
  */
 void gain_research(int tech){
   if ( player->techtree[tech] != 6)
-    player->techtree[tech]= ++player->techtree[tech];
+    ++player->techtree[tech];
   else
     printf("Already maxed out on this techtree");
 }
