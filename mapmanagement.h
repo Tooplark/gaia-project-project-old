@@ -7,7 +7,7 @@ typedef enum planet_type_enum {
 	orange,
 	red,
 	earthlike,
-	ice,
+	white,
 	metal,
 	gaia,
 	transdim
@@ -28,7 +28,7 @@ typedef enum building_enum {
 typedef struct planet {
 	planet_type color;
 	int owner;
-	building b;
+	building building;
 } *planet;
 
 /* The map is made up of 7 or 10 hexagonal tiles, each containing 19 individual
@@ -47,9 +47,16 @@ typedef struct hex {
 	bool isSpace;
 	union {
 		bool satellites[4];
-		planet p;
+		planet planet;
 	};
 } *hex;
+
+typedef struct tile {
+	int planet_count;
+	int* planet_x;
+	int* planet_y;
+	planet_type* planet_types;
+} * tile;
 
 /* Constructor for planets. Nothing to see here. */
 planet new_planet ();
@@ -71,7 +78,7 @@ hex *initialize_2p_map();
 
 tile* create_2p_tiles();
 
-void rotate_tile(tile* tile, int r);
+void rotate_tile(tile tile, int r);
 
 /* This is a subroutine for fill_map that puts the details of the specified
  * map tile into the map (that is, setting the space and planet fields).
@@ -80,6 +87,6 @@ void rotate_tile(tile* tile, int r);
  * The spaces occupied by the tile will be all spaces within 2 of the center;
  * that is, all spaces (a,b) where |a-x|, |b-y|, and |a+b-x-y| are at most 2.
  */
-void add_tile_to_map(int** map, int* tile, int tile_center_x, int tile_center_y);
+void add_tile_to_map(hex* map, int map_width, tile tile, int x, int y);
 
-void fill_map_two(int** map);
+void fill_2p_map(hex* map);
