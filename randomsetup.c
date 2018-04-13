@@ -10,9 +10,9 @@ void main(int argc, char* argv[]);
 void test();
 void beef();
 
-char* advtechlist[15] = {"PASSCOLORS", "PASSRS", "PASSFED", "TECHUPPT", "BUILDMINEPT", "BUILDTSPT", "TSPT", "FEDPT", "MINEPT", "SECTORPT", "GAIAPT", "SECTORORE", "ACT5C1Q", "ACT3R", "ACT3O"};
+char* advtechlist[15] = {"PASSCOLORS", "PASSRS", "PASSFED", "TECHUPPT", "BUILDMINEPT", "BUILDTSPT", "MINEPT", "TSPT", "FEDPT", "SECTORPT", "GAIAPT", "SECTORORE", "ACT5C1Q", "ACT3R", "ACT3O"};
 char* techlist[9] = {"1O1Pw", "4C", "1R1C", "1x1O1Q", "1x7Pt", "1xCOLORS->R", "BUILDGAIAPT", "4Pw", "BIG"};
-char* boosterlist[10] = {"1O1R", "1O2Tok", "2C1Q", "3Jump2Pw", "1Dig2C", "4CPassGaia", "4PwPassBIG", "1RPassRS", "1OPassMine", "4CPassGaia"};
+char* boosterlist[10] = {"1O1R", "1O2Tok", "2C1Q", "3Jump2Pw", "1Dig2C", "4CPassGaia", "4PwPassBIG", "1RPassRS", "1OPassMine", "1OPassTS"};
 char* roundlist[10] = {"2/SPADE", "2/MINE", "3/GAIA", "4/GAIA", "3/TP", "4/TP", "5/BIG", "5/BIG", "5/FED", "2/TECH"};
 char* endlist[6] = {"SECTOR", "SATELLITE", "BUILDINGS", "FEDBUILDINGS", "GAIA", "COLORS"};
 char* techtreelist[6] = {"TERRAFORMING", "NAVIGATION", "AI", "GAIAFORMING", "ECONOMY", "RESEARCH"};
@@ -112,7 +112,7 @@ void beef(int players) {
 
 	end[0] = rand() % 6;
 	end[1] = rand() % 5;
-	if (end[0] < end[1]) end[1]++;
+	if (end[0] <= end[1]) end[1]++;
 
 	randomfed = rand() % 6;
 
@@ -120,21 +120,24 @@ void beef(int players) {
 	printarr(rotation, 0, tilecount-1, "ROTATIONS\n");
 	
 	for(i=0; i<6; i++) {
-		printf("\nTrack %-12s gets %-11s on top, %-11s on bottom", techtreelist[i], advtechlist[advtech[i]], techlist[tech[i]]);
+		printf("\nTrack %-12s gets %-11s on top, %-11s on bottom", 
+				techtreelist[i], advtechlist[advtech[i]], 
+				techlist[tech[i]]);
 	}
 
 	printf("\n\nTERRAFORMING step 5 reward: %s", federationlist[randomfed]);
+
 	printf("\n\nBoosters are ");
 	for(i=0; i<boostercount-1; i++) {
 		printf("%s, ", boosterlist[boosters[i]]);
 	}
-	printf("%s\n\n", boosterlist[boosters[5]]);
+	printf("%s\n\n", boosterlist[boosters[i]]);
 
 	printf("Round bonuses are ");
 	for(i=0; i<5; i++) {
 		printf("%s, ", roundlist[round[i]]);
 	}
-	printf("%s\n\n", roundlist[round[5]]);
+	printf("%s\n\n", roundlist[round[i]]);
 
 	printf("Final scoring is %s and %s\n", 
 			endlist[end[0]], endlist[end[1]]);
@@ -145,11 +148,11 @@ void beef(int players) {
  * By pre-permutation I mean that the array specifies a sequence of values
  * that determine a permutation by telling youto pick the kth remaining tile
  * for the next slot in the permutation.
- * That is, if we want 3 letters from {a, b, c, d, e}, then the array [2 4 2]
- * would first tell us to pick the second ermaining letter (b), then the
- * fourth remainingletter (e), then the second (c). The output would be [2 5 3]
+ * That is, if we want 3 letters from {a, b, c, d, e}, then the array [1 3 1]
+ * would first tell us to pick the second remaining letter (b), then the
+ * fourth remaining letter (e), then the second (c). The output would be [1 4 2]
  * The input array is valid as long as array[i] is less than range - i.
- * If the inputis not valid, eventually we'll do something.
+ * If the input is not valid, eventually we'll do something. <-TODO
  * This is not clever, it's O(range * size).
  */
 	void renumber(int range, int* array, int size) {
@@ -158,8 +161,9 @@ void beef(int players) {
 
 		//Fill up an array with the values that can be taken 
 		for (i=0;i<range;i++) {
-			unused[i] = i+1;
+			unused[i] = i;
 		}
+		//Unused is an array: [0, 1, ... range-1].
 
 //		printarr(array, 0, size-1, "Array");
 //		printarr(unused, 0, range-1, "Unused");
@@ -170,16 +174,16 @@ void beef(int players) {
 		for (j=0;j<size;j++) {
 			k = 0;
 //			printf("i: ");
-			for (i=1; i<array[j]; i++) {
+			for (i=0; i<array[j]; i++) {
 //				printf("%d ", i);
 				//Skip already-taken values
-				while(unused[k] == 0) k++;
+				while(unused[k] == -1) k++;
 				k++;
 			}
 //			printf("\n");
-			while(unused[k] == 0) k++;
+			while(unused[k] == -1) k++;
 			array[j] = unused[k];
-			unused[k] = 0;
+			unused[k] = -1;
 //			printarr(unused, 0, range-1, "Unused Loop 1");
 		}
 }

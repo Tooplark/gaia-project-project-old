@@ -1,3 +1,4 @@
+#include <stdio.h> //get ridda dis
 #include <string.h>
 #include "mapmanagement.h"
 #include <stdbool.h>
@@ -30,6 +31,7 @@ hex *initialize_map () {
  */
 hex *initialize_2p_map() {
 	hex* map = malloc(15 * 15 * sizeof(hex));
+	fill_2p_map(map);
 	return map;
 }
 
@@ -116,12 +118,12 @@ void rotate_tile(tile tile, int r) {
 			temp_x = -temp_x;
 			temp_y = -temp_y;
 		}
-		if (r % 3 == 1) {
+		if (r % 3 == 2) {
 			temp_z = temp_y;
 			temp_y = temp_x;
 			temp_x = -temp_z -temp_y;
 		}
-		else if (r % 3 == 2) {
+		else if (r % 3 == 1) {
 			temp_z = temp_x;
 			temp_x = temp_y;
 			temp_y = -temp_z -temp_x;
@@ -141,19 +143,36 @@ void rotate_tile(tile tile, int r) {
  */
 void add_tile_to_map(hex* map, int map_width, tile tile, int x, int y){
 
-	int k;
+	int j, k;
 	hex current_hex;
 	planet current_planet;
 
+	/* Set all spaces touched by this tile to empty space
+	 */
+	for (j = -2; j < 3; j++) {
+		for (k = -2; k < 3; k++) {
+			if (- j - k <= 2 && j + k <= 2) {
+				current_hex = new_hex();
+				current_hex->isSpace = true;
+				map[(x + j) * map_width + y + k] =
+					current_hex;
+			}
+		}
+	}
+
+	/* Fill in the planets 
+	 */
 	for (k = 0; k < tile->planet_count; k++) {
-		current_hex = map[(x + tile->planet_x [k] - 2) * map_width
-					+ y + tile->planet_y[k] - 2];
+		current_hex = new_hex();
+					
 		current_hex->isSpace = false;
 		current_planet = new_planet();
 		current_planet->color = tile->planet_types[k];
 		current_planet->owner = 0;
 		current_planet->building = none;
 		current_hex->planet = current_planet;
+		map[(x + tile->planet_x [k] - 2) * map_width + y + 
+			tile->planet_y[k] - 2] = current_hex;
 	}
 }
 
@@ -192,4 +211,8 @@ void fill_2p_map(hex* map) {
 		add_tile_to_map(map, 15, tile_array[tile_order[i]], 
 				centers[2*i], centers[2*i+1]);	
 	}
+}
+
+hex get_hex_at_coords(hex* map, int width, int x, int y) {
+	return map[x * width + y];
 }

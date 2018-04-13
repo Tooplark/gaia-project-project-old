@@ -13,7 +13,11 @@ typedef enum planet_type_enum {
 	transdim
 } planet_type;
 	
-/* We handle gaiaformers as buildings, since they can't coexist w/ buildings */
+/* We handle gaiaformers as buildings, since they can't coexist w/ buildings.
+ * The turn that a gaiaformer is placed, it is a gaiaformer; during the next
+ * Gaia phase it will automatically upgrade to gaiaformer_ready, which
+ * upgrades to a mine. 
+ */
 typedef enum building_enum {
 	none,
 	mine,
@@ -21,10 +25,14 @@ typedef enum building_enum {
 	stronghold,
 	research,
 	institute,
-	gaiaformer
+	gaiaformer,
+	gaiaformer_ready
 } building;
 
-/* A planet has a color and possibly a building belonging to a player. */
+/* A planet has a color and possibly a building belonging to a player. 
+ * Owner is the number of the player (last player in a 4-player game
+ * corresponds to 4, first player is 1), and 0 means no owner.
+ */
 typedef struct planet {
 	planet_type color;
 	int owner;
@@ -90,3 +98,5 @@ void rotate_tile(tile tile, int r);
 void add_tile_to_map(hex* map, int map_width, tile tile, int x, int y);
 
 void fill_2p_map(hex* map);
+
+hex get_hex_at_coords(hex* map, int width, int x, int y);
