@@ -1,3 +1,4 @@
+#include <stdio.h> //TODO get dis outta here
 #include <string.h>
 #include "mapmanagement.h"
 #include <assert.h>
@@ -146,10 +147,15 @@ void test_add_tile_to_map() {
 
 void test_initialize_map() {
 	hex* map = initialize_2p_map();
+//	printf("seg12\n");
 }
 
 void main (int argc, char **argv) {
+//	printf("seg1\n");
 	test_rotate_tile();
+//	printf("seg2\n");
 	test_add_tile_to_map();
+//	printf("seg3\n");
 	test_initialize_map();
+//	printf("seg13\n");
 }

@@ -108,6 +108,7 @@ void beef(int players) {
 
 	for(i=0;i<tilecount;i++) {
 		rotation[i] = rand() % 6;
+		tiles[i]++; //tiles should be 1-indexed for clarity.
 	}
 
 	end[0] = rand() % 6;

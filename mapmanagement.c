@@ -31,7 +31,9 @@ hex *initialize_map () {
  */
 hex *initialize_2p_map() {
 	hex* map = malloc(15 * 15 * sizeof(hex));
+//	printf("seg4\n");
 	fill_2p_map(map);
+//	printf("seg14\n");
 	return map;
 }
 
@@ -40,8 +42,12 @@ hex *initialize_2p_map() {
  * TODO: make less grossugly?
  */
 tile* create_2p_tiles() {
+//	printf("seg6\n");
 	int i;
 	tile* tile_array = malloc(7 * sizeof(tile));
+	for (i = 0; i < 7; i++) {
+		tile_array[i] = malloc(sizeof(struct tile));
+	}
 	tile_array[0]->planet_count = 6;
 	tile_array[1]->planet_count = 7;
 	tile_array[2]->planet_count = 6;
@@ -50,6 +56,7 @@ tile* create_2p_tiles() {
 	tile_array[5]->planet_count = 5;
 	tile_array[6]->planet_count = 5;
 
+//	printf("seg7\n");
 	for(i=0; i < 7; i++) {
 		tile_array[i]->planet_x = malloc(tile_array[i]->planet_count
 				* sizeof(int));
@@ -59,6 +66,7 @@ tile* create_2p_tiles() {
 				* sizeof(planet));
 	}
 
+//	printf("seg8\n");
 	memcpy(tile_array[0]->planet_x, (int[]) {0, 1, 2, 3, 3, 4},
 			6 * sizeof(int));
 	memcpy(tile_array[0]->planet_y, (int[]) {3, 2, 4, 1, 3, 1}, 6 * sizeof(int));
@@ -93,6 +101,7 @@ tile* create_2p_tiles() {
 	memcpy(tile_array[6]->planet_y, (int[]) {2, 3, 1, 4, 2}, 5 * sizeof(int));
 	memcpy(tile_array[6]->planet_types, (int[]) {transdim, gaia, gaia, metal, brown}, 5 * sizeof(planet));
 
+//	printf("seg9\n");
 	return tile_array;
 }
 
@@ -112,8 +121,13 @@ tile* create_2p_tiles() {
 void rotate_tile(tile tile, int r) {
 	int temp_x, temp_y, temp_z, i;
 	for(i=0; i < tile->planet_count; i++){
-		temp_x = tile->planet_x[i] - 2;
+/*		printf("Checking tile %d:\n",i);
+		printf("planet_x pointer %p\n", (void *) tile->planet_x);
+		printf("x coordinate %d\n",tile->planet_x[i]);
+		printf("y coordinate %d\n");
+*/		temp_x = tile->planet_x[i] - 2;
 		temp_y = tile->planet_y[i] - 2;	
+//		printf("bluh3\n");
 		if (r % 2 == 1) {
 			temp_x = -temp_x;
 			temp_y = -temp_y;
@@ -128,6 +142,7 @@ void rotate_tile(tile tile, int r) {
 			temp_x = temp_y;
 			temp_y = -temp_z -temp_x;
 		}
+//		printf("bluh2\n");
 		tile->planet_x[i] = temp_x + 2;
 		tile->planet_y[i] = temp_y + 2;
 	}
@@ -147,6 +162,7 @@ void add_tile_to_map(hex* map, int map_width, tile tile, int x, int y){
 	hex current_hex;
 	planet current_planet;
 
+//	printf("addtileseg x=%d y=%d\n", x, y);
 	/* Set all spaces touched by this tile to empty space
 	 */
 	for (j = -2; j < 3; j++) {
@@ -154,12 +170,14 @@ void add_tile_to_map(hex* map, int map_width, tile tile, int x, int y){
 			if (- j - k <= 2 && j + k <= 2) {
 				current_hex = new_hex();
 				current_hex->isSpace = true;
+//				printf("\tadding to %d, %d (actual location %d)\n", x+j, y+k, (x+j)*map_width + y + k);
 				map[(x + j) * map_width + y + k] =
 					current_hex;
 			}
 		}
 	}
 
+//	printf("seg10\n");
 	/* Fill in the planets 
 	 */
 	for (k = 0; k < tile->planet_count; k++) {
@@ -171,9 +189,14 @@ void add_tile_to_map(hex* map, int map_width, tile tile, int x, int y){
 		current_planet->owner = 0;
 		current_planet->building = none;
 		current_hex->planet = current_planet;
-		map[(x + tile->planet_x [k] - 2) * map_width + y + 
+/*		printf("planetseg at %d,%d (%d)\n", x + tile->planet_x[k] - 2,
+				y + tile->planet_y[k] - 2, (x - 2 +
+					tile->planet_x[k]) * map_width + 
+				y + tile->planet_y[k] - 2);
+*/		map[(x + tile->planet_x [k] - 2) * map_width + y + 
 			tile->planet_y[k] - 2] = current_hex;
 	}
+//	printf("seg11\n");
 }
 
 void fill_2p_map(hex* map) {
@@ -181,36 +204,40 @@ void fill_2p_map(hex* map) {
 	int tile_order[7];
 	int tile_rotations[7];
 
-	/* eventually this will be a random permutation; for now it's 
-	 * always the same.
-	 */
-//	srand(time(NULL));
-//	rando_perm(7, tile_order, 7);
-//	for(i=0; i<7; i++) tile_rotations[i] = rand() % 6;
-	for (i=0; i < 5; i++) {
+	/* Generates a random permutation of the tiles, and a list of 
+	 * random rotations for them.
+	 *
+	srand(time(NULL));
+	rando_perm(7, tile_order, 7);
+	for(i=0; i<7; i++) tile_rotations[i] = rand() % 6;
+	*/
+	
+	// Non-random setup here, for temporary / testing purposes: 
+	
+	for (i=0; i < 7; i++) {
 		tile_order[i] = i;
-		tile_rotations[i] = i;
+		tile_rotations[i] = 0;
 	}
-	//this gross stuff is to use the 2-p-only tiles, 11 12 13.
-	for (i=5; i < 7; i++) {
-		tile_order[i] = i+6;
-		tile_rotations[i] = i % 6;
-	}
+	
 
 	tile* tile_array = create_2p_tiles();
 	
 	/* The center space of the center tile is 7,7. The other tile centers
 	 * are off by 3 in one direction, and 2 in another. That gives 
 	 * (starting with the 'left' tile and going clockwise) (2,9), (5,4),
-	 * (10,2), (14,5), (9, 10), (4,12).
+	 * (10,2), (12,5), (9, 10), (4,12).
 	 */
 	//TODO: generalize this?
-	int centers[14] = {7,7, 2,9, 5,4, 10,2, 14,5, 9,10, 4,12};
+//	printf("seg5\n");
+	int centers[14] = {7,7, 2,9, 5,4, 10,2, 12,5, 9,10, 4,12};
 	for (i=0; i < 7; i++) {
+//		printf("i=%dseg\n",i);
 		rotate_tile(tile_array[tile_order[i]], tile_rotations[i]);
+//		printf("loopseg%d\n", i);
 		add_tile_to_map(map, 15, tile_array[tile_order[i]], 
 				centers[2*i], centers[2*i+1]);	
 	}
+//	printf("seg15\n");
 }
 
 hex get_hex_at_coords(hex* map, int width, int x, int y) {
