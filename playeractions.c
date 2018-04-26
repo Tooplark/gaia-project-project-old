@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include 'mapmanagement.h'
+#include 'playeractions.h'
 
 /*To keep track, list of possible player actions:
 - Terraform
@@ -32,78 +33,21 @@ Free actions:
 - (Charge pw)
  */
 
-char* advtechlist[15] = {"PASSCOLORS", "PASSRS", "PASSFED", "TECHUPPT", "BUILDMINEPT", "BUILDTSPT", "TSPT", "FEDPT", "MINEPT", "SECTORPT", "GAIAPT", "SECTORORE", "ACT5C1Q", "ACT3R", "ACT3O"};
-char* techlist[9] = {"1O1Pw", "4C", "1R1C", "1x1O1Q", "1x7Pt", "1xCOLORS->R", "BUILDGAIAPT", "4Pw", "BIG"};
-char* boosterlist[10] = {"1O1R", "1O+2Pw", "2C1QIC", "3Jump2Pw", "1Dig2C", "1OPassTS", "4PwPassBIG", "1RPassRS", "1OPassMine", "4CPassGaia"};
-char* roundlist[10] = {"2/SPADE", "2/MINE", "3/GAIA", "4/GAIA", "3/TS", "4/TS", "5/BIG", "5/BIG", "5/FED", "2/TECH"};
-char* endlist[6] = {"SECTOR", "SATELLITE", "BUILDINGS", "FEDBUILDINGS", "GAIA", "COLORS"};
-char* techtreelist[6] = {"TERRAFORMING", "NAVIGATION", "AI", "GAIAFORMING", "ECONOMY", "RESEARCH"};
-char* federationlist[6] = {"6pt 2r", "7pt 2o", "7pt 6c", "8pt 1Q", "8pt 2Tok", "12pt"};
-char* specialactions={"3Jump2Pw", "1Dig2C", "4Pw", "ACT5C1Q", "ACT3R", "ACT3O", "Inst1QIC","SwapMineSH","BuildSpaceStation","RStoTS","TechUpLowest"};
+/*Constructor for player*/
+player new_player (){
+	player p = malloc(4 * sizeof(struct player));
+	return p;
+}
 
-
-/* /\* */
-/* A federation tyle should contain information on whether it is flipped or not */
-/*  *\/ */
-/* typedef struct federationtile { */
-/*   char *name; */
-/*   bool flipped; */
-/* }*federationtile; */
-
-/* /\* A standard techtile should contain information on whether it is covered or not, and if applicable, if the action on it has been taken */
-/*  *\/ */
-/* typedef struct techtile { */
-/*   char *name; */
-/*   bool covered; */
-/*   bool action; */
-/* }*techtile; */
-
-/* /\*An advanced techtile should contain information, if applicable, whether the action on it has been taken */
-/*  *\/ */
-/* typedef struct adv_techtile{ */
-/*   char *name; */
-/*   bool action; */
-/* }*adv_techtile; */
-
-
-/* Define the player's position on different VP tracks, techtrees, techtiles and federation tiles they possess, remaining buildings, and built planets
-There are maximum 4 players.
- */
-typedef struct player {
-  int vp;
-  int techtree[6]; /*0:terraforming, 1:navigation, 2:ai, 3:gaiaforming, 4:economy, 5:research*/
-  int eogbonus[2];
-  bool techtiles[9];
-  bool covered_techtiles[9];
-  bool adv_techtiles[6];
-  bool federationtiles[13];
-  int unflipped_federationtiles;
-  int spec_actions[];
-  int numMine;
-  int numTrading;
-  int numSH;
-  int numResearch;
-  int numAcademy;
-  int numGaiaFormer;
-  /* planet *planets;*/
-  int ore;
-  int credit;
-  int pw[4];
-  int QIC;
-  int knowledge;
-} player[4];
 
 /*Function to print all information about a player*/
-void printplayer {
-
+void printplayer(int playerid) {
+  printf ("playerid: %d\n",playerid);
+printf( "victory pointes: %d\n", player[playerid].vp);
 }
 		 
 
-/*The game supply has a number of federation tiles and techtiles and advanced techtiles
- */
-typedef struct supply {
-  
-} supply;
+
 
 /*Charging power: 
 if there is enough power in pw1, then pw is transfered from pw1 to pw2
